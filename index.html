@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -21,127 +20,126 @@ body { background:var(--cream); color:var(--deep); font-family:'Noto Sans KR',sa
 
 /* HERO */
 .hero {
-min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
-text-align:center; padding:60px 24px;
-background:linear-gradient(160deg,#fdf0ea 0%,#faf6f0 50%,#f5ede8 100%);
-position:relative; overflow:hidden;
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  text-align:center; padding:60px 24px;
+  background:linear-gradient(160deg,#fdf0ea 0%,#faf6f0 50%,#f5ede8 100%);
+  position:relative; overflow:hidden;
 }
 .hero::before {
-content:‘日’; position:absolute; font-size:40vw; color:rgba(201,115,106,0.04);
-font-family:‘Noto Serif JP’,serif; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;
+  content:'日'; position:absolute; font-size:40vw; color:rgba(201,115,106,0.04);
+  font-family:'Noto Serif JP',serif; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;
 }
 .hero-tag {
-font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(–rose);
-margin-bottom:20px; opacity:0; animation:fadeUp 0.8s ease forwards 0.2s;
+  font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--rose);
+  margin-bottom:20px; opacity:0; animation:fadeUp 0.8s ease forwards 0.2s;
 }
 .hero h1 {
-font-family:‘Playfair Display’,serif; font-size:clamp(32px,8vw,68px); font-weight:400;
-font-style:italic; color:var(–deep); line-height:1.25; margin-bottom:24px;
-opacity:0; animation:fadeUp 0.8s ease forwards 0.4s;
+  font-family:'Playfair Display',serif; font-size:clamp(32px,8vw,68px); font-weight:400;
+  font-style:italic; color:var(--deep); line-height:1.25; margin-bottom:24px;
+  opacity:0; animation:fadeUp 0.8s ease forwards 0.4s;
 }
 .hero-catch {
-font-size:clamp(14px,2.5vw,18px); color:var(–deep); font-weight:400;
-margin-bottom:12px; opacity:0; animation:fadeUp 0.8s ease forwards 0.55s;
+  font-size:clamp(14px,2.5vw,18px); color:var(--deep); font-weight:400;
+  margin-bottom:12px; opacity:0; animation:fadeUp 0.8s ease forwards 0.55s;
 }
 .hero-sub {
-font-size:clamp(12px,2vw,14px); color:var(–muted); margin-bottom:40px;
-opacity:0; animation:fadeUp 0.8s ease forwards 0.65s; line-height:2;
+  font-size:clamp(12px,2vw,14px); color:var(--muted); margin-bottom:40px;
+  opacity:0; animation:fadeUp 0.8s ease forwards 0.65s; line-height:2;
 }
 .hero-badge {
-display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
-opacity:0; animation:fadeUp 0.8s ease forwards 0.8s;
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  opacity:0; animation:fadeUp 0.8s ease forwards 0.8s;
 }
 .badge {
-background:var(–white); border:1px solid var(–blush); padding:6px 16px;
-border-radius:20px; font-size:12px; color:var(–rose); letter-spacing:1px;
+  background:var(--white); border:1px solid var(--blush); padding:6px 16px;
+  border-radius:20px; font-size:12px; color:var(--rose); letter-spacing:1px;
 }
 
 /* SECTION */
 section { padding:72px 24px; max-width:680px; margin:0 auto; }
-.section-label { font-size:10px; letter-spacing:5px; text-transform:uppercase; color:var(–gold); margin-bottom:10px; }
-h2 { font-family:‘Noto Serif JP’,serif; font-size:clamp(20px,4vw,30px); font-weight:300; margin-bottom:28px; color:var(–deep); }
+.section-label { font-size:10px; letter-spacing:5px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+h2 { font-family:'Noto Serif JP',serif; font-size:clamp(20px,4vw,30px); font-weight:300; margin-bottom:28px; color:var(--deep); }
 
 /* ABOUT */
 .about-card {
-background:var(–white); border:1px solid var(–blush); border-radius:16px; padding:32px;
+  background:var(--white); border:1px solid var(--blush); border-radius:16px; padding:32px;
 }
 .about-card .main-copy {
-font-size:clamp(15px,2.5vw,17px); color:var(–deep); font-weight:400; line-height:2;
-margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid var(–blush);
+  font-size:clamp(15px,2.5vw,17px); color:var(--deep); font-weight:400; line-height:2;
+  margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid var(--blush);
 }
 .about-card .main-copy em {
-font-style:normal; color:var(–rose); font-weight:700;
+  font-style:normal; color:var(--rose); font-weight:700;
 }
-.about-card p { font-size:13px; color:var(–muted); line-height:2; }
+.about-card p { font-size:13px; color:var(--muted); line-height:2; }
 .about-card p + p { margin-top:10px; }
 .thoughts { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
 .thought {
-background:var(–cream); border-left:3px solid var(–blush);
-padding:12px 16px; border-radius:0 8px 8px 0;
+  background:var(--cream); border-left:3px solid var(--blush);
+  padding:12px 16px; border-radius:0 8px 8px 0;
 }
-.thought .label { font-size:10px; color:var(–gold); letter-spacing:2px; display:block; margin-bottom:4px; }
-.thought p { font-size:13px; color:var(–deep); font-style:italic; }
+.thought .label { font-size:10px; color:var(--gold); letter-spacing:2px; display:block; margin-bottom:4px; }
+.thought p { font-size:13px; color:var(--deep); font-style:italic; }
 
 /* PLANS */
 .plan-category {
-font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(–muted);
-margin:28px 0 14px; padding-bottom:8px; border-bottom:1px solid var(–blush);
+  font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted);
+  margin:28px 0 14px; padding-bottom:8px; border-bottom:1px solid var(--blush);
 }
 .plans { display:flex; flex-direction:column; gap:16px; }
 .plan-card {
-background:var(–white); border:1px solid var(–blush); border-radius:16px;
-padding:26px; position:relative;
-transition:transform 0.2s ease, box-shadow 0.2s ease;
+  background:var(--white); border:1px solid var(--blush); border-radius:16px;
+  padding:26px; position:relative;
+  transition:transform 0.2s ease, box-shadow 0.2s ease;
 }
 .plan-card:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(201,115,106,0.12); }
-.plan-card.featured { border-color:var(–rose); background:linear-gradient(135deg,#fff 0%,#fdf0ea 100%); }
+.plan-card.featured { border-color:var(--rose); background:linear-gradient(135deg,#fff 0%,#fdf0ea 100%); }
 .plan-card.featured::after {
-content:‘✦ POPULAR’; position:absolute; top:-12px; right:24px;
-background:var(–rose); color:white; font-size:9px; letter-spacing:3px;
-padding:4px 12px; border-radius:10px;
+  content:'✦ POPULAR'; position:absolute; top:-12px; right:24px;
+  background:var(--rose); color:white; font-size:9px; letter-spacing:3px;
+  padding:4px 12px; border-radius:10px;
 }
 .plan-emoji { font-size:26px; margin-bottom:10px; }
-.plan-name { font-family:‘Noto Serif JP’,serif; font-size:17px; font-weight:400; margin-bottom:3px; color:var(–deep); }
-.plan-name-kr { font-size:12px; color:var(–muted); margin-bottom:14px; letter-spacing:1px; }
-.plan-price { font-size:26px; font-weight:700; color:var(–rose); margin-bottom:4px; }
-.plan-price span { font-size:13px; font-weight:300; color:var(–muted); }
+.plan-name { font-family:'Noto Serif JP',serif; font-size:17px; font-weight:400; margin-bottom:3px; color:var(--deep); }
+.plan-name-kr { font-size:12px; color:var(--muted); margin-bottom:14px; letter-spacing:1px; }
+.plan-price { font-size:26px; font-weight:700; color:var(--rose); margin-bottom:4px; }
+.plan-price span { font-size:13px; font-weight:300; color:var(--muted); }
 .price-tiers { display:flex; flex-direction:column; gap:6px; margin:14px 0 4px; }
 .tier-row {
-display:flex; justify-content:space-between; align-items:center;
-padding:8px 12px; background:var(–cream); border-radius:8px; font-size:13px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px; background:var(--cream); border-radius:8px; font-size:13px;
 }
-.tier-label { color:var(–muted); }
-.tier-price { font-weight:700; color:var(–rose); }
-.plan-desc { font-size:13px; color:var(–muted); line-height:1.9; margin-top:14px; padding-top:14px; border-top:1px solid var(–blush); }
+.tier-label { color:var(--muted); }
+.tier-price { font-weight:700; color:var(--rose); }
+.plan-desc { font-size:13px; color:var(--muted); line-height:1.9; margin-top:14px; padding-top:14px; border-top:1px solid var(--blush); }
 .plan-includes { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
-.plan-includes li { list-style:none; font-size:13px; color:var(–deep); display:flex; align-items:flex-start; gap:8px; }
-.plan-includes li::before { content:‘✓’; color:var(–rose); font-size:12px; margin-top:2px; flex-shrink:0; }
+.plan-includes li { list-style:none; font-size:13px; color:var(--deep); display:flex; align-items:flex-start; gap:8px; }
+.plan-includes li::before { content:'✓'; color:var(--rose); font-size:12px; margin-top:2px; flex-shrink:0; }
 
 /* RULES */
 .rules-grid { display:flex; flex-direction:column; gap:14px; }
-.rule-item { display:flex; gap:16px; align-items:flex-start; padding:18px 20px; background:var(–white); border-radius:12px; border:1px solid var(–blush); }
-.rule-num { font-family:‘Playfair Display’,serif; font-size:26px; font-style:italic; color:var(–blush); line-height:1; flex-shrink:0; width:30px; }
-.rule-text strong { display:block; font-size:14px; font-weight:700; color:var(–deep); margin-bottom:3px; }
-.rule-text p { font-size:13px; color:var(–muted); line-height:1.7; }
+.rule-item { display:flex; gap:16px; align-items:flex-start; padding:18px 20px; background:var(--white); border-radius:12px; border:1px solid var(--blush); }
+.rule-num { font-family:'Playfair Display',serif; font-size:26px; font-style:italic; color:var(--blush); line-height:1; flex-shrink:0; width:30px; }
+.rule-text strong { display:block; font-size:14px; font-weight:700; color:var(--deep); margin-bottom:3px; }
+.rule-text p { font-size:13px; color:var(--muted); line-height:1.7; }
 
 /* FLOW */
 .flow-steps { display:flex; flex-direction:column; position:relative; }
-.flow-steps::before { content:’’; position:absolute; left:20px; top:40px; bottom:40px; width:1px; background:linear-gradient(to bottom,var(–blush),transparent); }
+.flow-steps::before { content:''; position:absolute; left:20px; top:40px; bottom:40px; width:1px; background:linear-gradient(to bottom,var(--blush),transparent); }
 .flow-step { display:flex; gap:20px; align-items:flex-start; padding:14px 0; }
-.flow-dot { width:40px; height:40px; border-radius:50%; background:var(–white); border:2px solid var(–blush); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; position:relative; z-index:1; }
-.flow-content strong { display:block; font-size:14px; font-weight:700; color:var(–deep); margin-bottom:2px; }
-.flow-content p { font-size:13px; color:var(–muted); }
+.flow-dot { width:40px; height:40px; border-radius:50%; background:var(--white); border:2px solid var(--blush); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; position:relative; z-index:1; }
+.flow-content strong { display:block; font-size:14px; font-weight:700; color:var(--deep); margin-bottom:2px; }
+.flow-content p { font-size:13px; color:var(--muted); }
 
 /* NOTE */
-.note-box { background:linear-gradient(135deg,#fdf0ea,#faf6f0); border:1px solid var(–blush); border-radius:16px; padding:28px; text-align:center; }
-.note-box p { font-size:14px; color:var(–muted); line-height:2; }
-.note-box strong { color:var(–rose); }
+.note-box { background:linear-gradient(135deg,#fdf0ea,#faf6f0); border:1px solid var(--blush); border-radius:16px; padding:28px; text-align:center; }
+.note-box p { font-size:14px; color:var(--muted); line-height:2; }
+.note-box strong { color:var(--rose); }
 
-footer { text-align:center; padding:40px 24px 60px; font-size:12px; color:var(–blush); letter-spacing:2px; }
+footer { text-align:center; padding:40px 24px 60px; font-size:12px; color:var(--blush); letter-spacing:2px; }
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 </style>
-
 </head>
 <body>
 
@@ -157,6 +155,7 @@ footer { text-align:center; padding:40px 24px 60px; font-size:12px; color:var(�
     <span class="badge">번역기 OK</span>
     <span class="badge">카페 & 한국어 교실 근무 중</span>
   </div>
+  <a href="https://calendly.com/mom-0730-mom/30min" target="_blank" style="margin-top:32px;display:inline-block;background:var(--rose);color:white;padding:14px 32px;border-radius:30px;font-size:14px;text-decoration:none;letter-spacing:1px;opacity:0;animation:fadeUp 0.8s ease forwards 1s">무료 카운슬링 예약하기 🌸</a>
 </div>
 
 <section>
@@ -195,46 +194,44 @@ footer { text-align:center; padding:40px 24px 60px; font-size:12px; color:var(�
   <p class="plan-category">💬 온라인 레슨</p>
   <div class="plans">
 
-```
-<div class="plan-card">
-  <div class="plan-emoji">🗣️</div>
-  <div class="plan-name">会話レッスン · 미니</div>
-  <div class="plan-name-kr">가볍게 말하기 연습</div>
-  <div class="plan-price">¥1,000<span> / 15분</span></div>
-  <p class="plan-desc">짧지만 진해요. 오늘 딱 한 가지 표현만 써봐도 OK. 일본어 입을 트는 데 딱이에요.</p>
-  <ul class="plan-includes">
-    <li>자유 회화 위주</li>
-    <li>번역기 사용 OK</li>
-    <li>이상한 표현은 바로 수정</li>
-  </ul>
-</div>
+    <div class="plan-card">
+      <div class="plan-emoji">🗣️</div>
+      <div class="plan-name">会話レッスン · 미니</div>
+      <div class="plan-name-kr">가볍게 말하기 연습</div>
+      <div class="plan-price">¥1,000<span> / 15분</span></div>
+      <p class="plan-desc">짧지만 진해요. 오늘 딱 한 가지 표현만 써봐도 OK. 일본어 입을 트는 데 딱이에요.</p>
+      <ul class="plan-includes">
+        <li>자유 회화 위주</li>
+        <li>번역기 사용 OK</li>
+        <li>이상한 표현은 바로 수정</li>
+      </ul>
+    </div>
 
-<div class="plan-card featured">
-  <div class="plan-emoji">💬</div>
-  <div class="plan-name">会話レッスン · 스탠다드</div>
-  <div class="plan-name-kr">회화 집중 30분</div>
-  <div class="plan-price">¥2,000<span> / 30분</span></div>
-  <p class="plan-desc">첫 수업은 무료 카운슬링 포함. 원하는 주제로 자유롭게 — 수업 내내 일본어만 써요.</p>
-  <ul class="plan-includes">
-    <li>첫 수업 무료 카운슬링 15분 포함</li>
-    <li>주제 자유 선택 (일상 / 여행 / 드라마 등)</li>
-    <li>수업 후 틀린 표현 정리해서 전송</li>
-  </ul>
-</div>
+    <div class="plan-card featured">
+      <div class="plan-emoji">💬</div>
+      <div class="plan-name">会話レッスン · 스탠다드</div>
+      <div class="plan-name-kr">회화 집중 30분</div>
+      <div class="plan-price">¥2,000<span> / 30분</span></div>
+      <p class="plan-desc">첫 수업은 무료 카운슬링 포함. 원하는 주제로 자유롭게 — 수업 내내 일본어만 써요.</p>
+      <ul class="plan-includes">
+        <li>첫 수업 무료 카운슬링 15분 포함</li>
+        <li>주제 자유 선택 (일상 / 여행 / 드라마 등)</li>
+        <li>수업 후 틀린 표현 정리해서 전송</li>
+      </ul>
+    </div>
 
-<div class="plan-card">
-  <div class="plan-emoji">📖</div>
-  <div class="plan-name">授業形式レッスン</div>
-  <div class="plan-name-kr">수업형 레슨 30분</div>
-  <div class="plan-price">¥2,500<span> / 30분</span></div>
-  <p class="plan-desc">체계적으로 배우고 싶은 분 전용. 문법 / 어휘 / 발음 등 목표를 정해서 진행해요.</p>
-  <ul class="plan-includes">
-    <li>목표 설정 후 맞춤 커리큘럼</li>
-    <li>복습 자료 매 수업 후 전송</li>
-    <li>숙제 있어요 (선택)</li>
-  </ul>
-</div>
-```
+    <div class="plan-card">
+      <div class="plan-emoji">📖</div>
+      <div class="plan-name">授業形式レッスン</div>
+      <div class="plan-name-kr">수업형 레슨 30분</div>
+      <div class="plan-price">¥2,500<span> / 30분</span></div>
+      <p class="plan-desc">체계적으로 배우고 싶은 분 전용. 문법 / 어휘 / 발음 등 목표를 정해서 진행해요.</p>
+      <ul class="plan-includes">
+        <li>목표 설정 후 맞춤 커리큘럼</li>
+        <li>복습 자료 매 수업 후 전송</li>
+        <li>숙제 있어요 (선택)</li>
+      </ul>
+    </div>
 
   </div>
 
@@ -371,12 +368,13 @@ footer { text-align:center; padding:40px 24px 60px; font-size:12px; color:var(�
 </section>
 
 <section style="padding-top:0">
-  <div class="note-box">
+  <div class="note-box" style="text-align:center">
     <p>
       궁금한 점은 언제든지 DM으로 편하게 물어보세요 🌸<br>
       첫 카운슬링 <strong>15분은 무료</strong>예요.<br>
       같이 딱 맞는 플랜을 찾아봐요!
     </p>
+    <a href="https://calendly.com/mom-0730-mom/30min" target="_blank" style="margin-top:24px;display:inline-block;background:var(--rose);color:white;padding:14px 32px;border-radius:30px;font-size:14px;text-decoration:none;letter-spacing:1px">무료 카운슬링 예약하기 🌸</a>
   </div>
 </section>
 
