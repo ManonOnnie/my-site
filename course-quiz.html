@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코스 진단 | momo.일본어 교실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #fffdf9;
+  color: #3c2c1e;
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  font-weight: 300;
+  line-height: 1.85;
+  word-break: keep-all;
+  min-height: 100vh;
+}
+.wrap { max-width: 480px; margin: 0 auto; padding: 32px 24px 64px; min-height: 100vh; display: flex; flex-direction: column; }
+.top-link { font-size: 12px; color: #7a6852; text-decoration: none; margin-bottom: 24px; display: inline-block; }
+.progress { display: flex; gap: 5px; margin-bottom: 28px; }
+.progress span { flex: 1; height: 4px; border-radius: 2px; background: #f0e6d4; }
+.progress span.done { background: #6b4a2c; }
+
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #7a5738; font-weight: 700; margin-bottom: 10px; }
+h1 { font-size: 23px; font-weight: 700; margin-bottom: 8px; }
+.lede { font-size: 13px; color: #7a6852; margin-bottom: 32px; }
+
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.active { display: flex; }
+.q-num { font-size: 11px; color: #a5917a; font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
+.q-text { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.5; }
+.q-note { font-size: 12px; color: #a5917a; margin-bottom: 20px; }
+
+.choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.choice-btn {
+  text-align: left; background: #f4ecdd; border: 1px solid rgba(60,44,30,0.1);
+  border-radius: 14px; padding: 15px 18px; font-size: 14px; color: #3c2c1e;
+  font-family: inherit; cursor: pointer;
+}
+.choice-btn.selected { background: #5a3d24; color: #fffdf9; border-color: #5a3d24; }
+.text-input {
+  width: 100%; padding: 14px 16px; border: 1px solid rgba(60,44,30,0.15); border-radius: 12px;
+  font-size: 14px; font-family: inherit; background: #fffdf9; margin-bottom: 24px; color: #3c2c1e;
+}
+.q-actions { margin-top: auto; display: flex; gap: 10px; }
+.quiz-body { flex: 1; flex-direction: column; }
+.q-btn.back { flex: 0 0 auto; background: none; color: #a5917a; padding: 14px 8px; }
+.back-row { margin-top: auto; display: flex; }
+.back-row.only { padding-top: 4px; }
+.q-btn { flex: 1; padding: 14px; border-radius: 999px; font-size: 14px; font-weight: 700; border: none; font-family: inherit; cursor: pointer; }
+.q-btn.next { background: #5a3d24; color: #fffdf9; }
+.q-btn.next:disabled { background: #e3d5ba; color: #a5917a; }
+.q-btn.skip { background: none; color: #a5917a; }
+
+.result-screen { display: none; flex: 1; flex-direction: column; align-items: center; text-align: center; }
+.result-screen.active { display: flex; }
+.result-eyebrow { font-size: 12px; color: #7a5738; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+.result-hello { font-size: 14px; color: #7a6852; margin-bottom: 4px; }
+.result-name { font-size: 26px; font-weight: 900; margin-bottom: 10px; }
+.result-time { font-size: 12px; color: #a5917a; margin-bottom: 18px; }
+.result-desc { font-size: 14px; color: #6f5c48; margin-bottom: 22px; line-height: 1.9; }
+.reasons { text-align: left; background: #f4ecdd; border-radius: 16px; padding: 18px 20px; margin-bottom: 22px; width: 100%; }
+.reasons-title { font-size: 12px; font-weight: 700; color: #7a5738; margin-bottom: 10px; }
+.reasons li { font-size: 13px; color: #5c4a37; margin-bottom: 6px; margin-left: 16px; }
+.result-price-box { background: #f4ecdd; border-radius: 16px; padding: 18px 22px; margin-bottom: 26px; width: 100%; }
+.result-price-box .n { font-size: 12px; color: #7a6852; }
+.result-price-box .v { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #6b4a2c; }
+.result-btn {
+  display: inline-block; background: #5a3d24; color: #fffdf9; padding: 14px 32px;
+  border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none; margin-bottom: 14px; width: 100%;
+}
+.retry-link { font-size: 12px; color: #7a6852; text-decoration: underline; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="top-link">← 홈으로</a>
+
+  <div id="quizStart">
+    <p class="eyebrow">Course Quiz</p>
+    <h1>나에게 맞는 코스는?</h1>
+    <p class="lede">질문 몇 개에 답하면 momo가 딱 맞는 코스와 추천 횟수를 알려드려요 (약 1분)</p>
+    <button class="choice-btn" onclick="startQuiz()" style="text-align:center;font-weight:700;">진단 시작하기 →</button>
+  </div>
+
+  <div id="quizBody" class="quiz-body" style="display:none;">
+    <div class="progress" id="progressBar"></div>
+
+    <div class="screen active" data-q="1">
+      <p class="q-num">Q1 · 7</p>
+      <p class="q-text">이름을 알려주세요</p>
+      <p class="q-note">닉네임도 괜찮아요. 진단 결과 확인 및 체험 레슨 신청 시 사용돼요</p>
+      <input type="text" id="nameInput" class="text-input" placeholder="이름 입력">
+      <div class="q-actions"><button class="q-btn next" onclick="nextFromText()">다음 →</button></div>
+    </div>
+
+    <div class="screen" data-q="2">
+      <p class="q-num">Q2 · 7</p>
+      <p class="q-text">지금 일본어 실력은 어느 정도인가요?</p>
+      <div class="choices" data-single="level">
+        <button class="choice-btn" data-v="none">일본어는 아직 잘 못해요</button>
+        <button class="choice-btn" data-v="basic">간단한 회화는 가능해요</button>
+        <button class="choice-btn" data-v="limited">곤란하진 않지만 쓸 수 있는 말이 제한적이에요</button>
+        <button class="choice-btn" data-v="natural">대체로 말하지만 일본인다운 자연스러운 화법을 익히고 싶어요</button>
+        <button class="choice-btn" data-v="nuance">존댓말이나 뉘앙스를 더 배우고 싶어요</button>
+      </div>
+      <div class="back-row only"><button class="q-btn back" onclick="goBack()">← 이전</button></div>
+    </div>
+
+    <div class="screen" data-q="3">
+      <p class="q-num">Q3 · 7</p>
+      <p class="q-text">일본어를 배우는 목적은?</p>
+      <p class="q-note">여러 개 선택 가능</p>
+      <div class="choices" data-multi="purpose">
+        <button class="choice-btn" data-v="talk">일본인과 이야기하고 싶다</button>
+        <button class="choice-btn" data-v="study_abroad">유학 예정</button>
+        <button class="choice-btn" data-v="work">일본에서 일하고 싶다</button>
+        <button class="choice-btn" data-v="pronunciation">발음을 예쁘게 하고 싶다</button>
+        <button class="choice-btn" data-v="grammar">문법부터 탄탄히 배우고 싶다</button>
+      </div>
+      <div class="q-actions"><button class="q-btn back" onclick="goBack()">← 이전</button><button class="q-btn next" onclick="nextFromMulti('purpose', 3)">다음 →</button></div>
+    </div>
+
+    <div class="screen" data-q="4">
+      <p class="q-num">Q4 · 7</p>
+      <p class="q-text">레슨 외에는 얼마나 공부하시나요?</p>
+      <div class="choices" data-single="selfstudy">
+        <button class="choice-btn" data-v="lesson_only">기본적으로 레슨만으로 늘고 싶어요</button>
+        <button class="choice-btn" data-v="homework">숙제가 있으면 조금 할 수 있어요</button>
+        <button class="choice-btn" data-v="weekly">주 1~3시간 정도 자습할 수 있어요</button>
+        <button class="choice-btn" data-v="daily">매일 스스로 공부할 예정이에요</button>
+      </div>
+      <div class="back-row only"><button class="q-btn back" onclick="goBack()">← 이전</button></div>
+    </div>
+
+    <div class="screen" data-q="5">
+      <p class="q-num">Q5 · 7</p>
+      <p class="q-text">레슨에서 특히 중요하게 생각하는 것은?</p>
+      <p class="q-note">최대 3개까지 선택</p>
+      <div class="choices" data-multi="priority">
+        <button class="choice-btn" data-v="talk_a_lot">아무튼 많이 말하고 싶다</button>
+        <button class="choice-btn" data-v="correction">틀린 표현을 바로 고쳐줬으면 좋겠다</button>
+        <button class="choice-btn" data-v="pronunciation2">발음·억양</button>
+        <button class="choice-btn" data-v="natural_expr">자연스러운 표현</button>
+        <button class="choice-btn" data-v="grammar2">문법도 제대로 이해하고 싶다</button>
+        <button class="choice-btn" data-v="curriculum">나만의 커리큘럼으로 진행하고 싶다</button>
+      </div>
+      <div class="q-actions"><button class="q-btn back" onclick="goBack()">← 이전</button><button class="q-btn next" onclick="nextFromMulti('priority', 4)">다음 →</button></div>
+    </div>
+
+    <div class="screen" data-q="6">
+      <p class="q-num">Q6 · 7</p>
+      <p class="q-text">일본어만으로 진행하는 레슨, 어떠세요?</p>
+      <div class="choices" data-single="jaonly">
+        <button class="choice-btn" data-v="excited">재밌겠다! 도전하고 싶어요</button>
+        <button class="choice-btn" data-v="nervous_ok">처음엔 조금 불안하지만 도전할래요</button>
+        <button class="choice-btn" data-v="sometimes_kr">필요할 때만 한국어 지원이 있으면 좋겠어요</button>
+        <button class="choice-btn" data-v="worried">일본어만이면 조금 불안해요</button>
+      </div>
+      <div class="back-row only"><button class="q-btn back" onclick="goBack()">← 이전</button></div>
+    </div>
+
+    <div class="screen" data-q="7">
+      <p class="q-num">Q7 · 7 · 선택</p>
+      <p class="q-text">MBTI (선택사항)</p>
+      <p class="q-note">진단 결과에는 영향을 주지 않아요. 레슨 진행 시 참고용으로만 사용해요</p>
+      <input type="text" id="mbtiInput" class="text-input" placeholder="예: ENFP / 모름 / 답변 안 함">
+      <div class="q-actions"><button class="q-btn back" onclick="goBack()">← 이전</button><button class="q-btn next" onclick="finishQuiz()">결과 보기 →</button></div>
+    </div>
+  </div>
+
+  <div id="resultScreen" class="result-screen">
+    <p class="result-eyebrow">YOUR COURSE</p>
+    <p class="result-hello" id="resultHello"></p>
+    <p class="result-name" id="resultName"></p>
+    <p class="result-time" id="resultTime"></p>
+    <p class="result-desc" id="resultDesc"></p>
+    <div class="reasons">
+      <div class="reasons-title">💡 이렇게 진단했어요</div>
+      <ul id="resultReasons"></ul>
+    </div>
+    <div class="result-price-box">
+      <span class="n" id="resultPriceLabel"></span><br>
+      <span class="v" id="resultPriceValue"></span>
+    </div>
+    <p style="font-size:12px; color:#a5917a; margin-bottom:10px;">예약은 인스타그램 DM으로 받고 있어요<br>DM으로 <strong style="color:#6b4a2c;">"예약"</strong>이라고 보내주세요 🌸</p>
+    <a href="https://www.instagram.com/momo.jptutor?igsh=MWl2NWRrdW5xbXY1cg%3D%3D&utm_source=qr" target="_blank" class="result-btn">인스타그램 DM 보내기 🌸</a>
+    <span class="retry-link" onclick="location.reload()">다시 진단하기</span>
+  </div>
+</div>
+
+<script>
+var IG_URL = 'https://www.instagram.com/momo.jptutor?igsh=MWl2NWRrdW5xbXY1cg%3D%3D&utm_source=qr';
+var answers = { level: null, purpose: [], selfstudy: null, priority: [], jaonly: null, name: '', mbti: '' };
+var currentQ = 1;
+var TOTAL_Q = 7;
+
+function buildProgress() {
+  var bar = document.getElementById('progressBar');
+  for (var i = 0; i < TOTAL_Q; i++) {
+    var s = document.createElement('span');
+    bar.appendChild(s);
+  }
+}
+buildProgress();
+
+function startQuiz() {
+  document.getElementById('quizStart').style.display = 'none';
+  document.getElementById('quizBody').style.display = 'flex';
+}
+
+// single-select wiring
+document.querySelectorAll('[data-single]').forEach(function(group) {
+  var key = group.getAttribute('data-single');
+  group.querySelectorAll('.choice-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      group.querySelectorAll('.choice-btn').forEach(function(b) { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      answers[key] = btn.getAttribute('data-v');
+      setTimeout(function() { goNext(); }, 220);
+    });
+  });
+});
+
+// multi-select wiring
+document.querySelectorAll('[data-multi]').forEach(function(group) {
+  var key = group.getAttribute('data-multi');
+  group.querySelectorAll('.choice-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var v = btn.getAttribute('data-v');
+      var idx = answers[key].indexOf(v);
+      var max = group.closest('.screen').querySelector('.q-btn.next').getAttribute('data-max') || 99;
+      if (idx > -1) {
+        answers[key].splice(idx, 1);
+        btn.classList.remove('selected');
+      } else {
+        answers[key].push(v);
+        btn.classList.add('selected');
+      }
+    });
+  });
+});
+
+function nextFromMulti(key, max) {
+  document.querySelector('.q-btn.next[onclick*="' + key + '"]').setAttribute('data-max', max);
+  goNext();
+}
+
+function nextFromText() {
+  answers.name = document.getElementById('nameInput').value.trim() || '고객';
+  goNext();
+}
+
+function goNext() {
+  var barSpans = document.querySelectorAll('#progressBar span');
+  barSpans[currentQ - 1].classList.add('done');
+  var cur = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  cur.classList.remove('active');
+  currentQ++;
+  var next = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  if (next) next.classList.add('active');
+}
+
+function goBack() {
+  if (currentQ <= 1) return;
+  var cur = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  cur.classList.remove('active');
+  currentQ--;
+  var barSpans = document.querySelectorAll('#progressBar span');
+  barSpans[currentQ - 1].classList.remove('done');
+  var prev = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  prev.classList.add('active');
+}
+
+function finishQuiz() {
+  answers.mbti = document.getElementById('mbtiInput').value.trim() || '답변 안 함';
+  var barSpans = document.querySelectorAll('#progressBar span');
+  barSpans[TOTAL_Q - 1].classList.add('done');
+  document.getElementById('quizBody').style.display = 'none';
+  showResult();
+}
+
+function showResult() {
+  // ---- scoring ----
+  var score = { mini: 0, standard: 0, premium: 0 };
+  var reasons = [];
+  var urgent = answers.purpose.indexOf('study_abroad') > -1 || answers.purpose.indexOf('work') > -1;
+
+  var levelMap = {
+    none:    { premium: 3 },
+    basic:   { mini: 1, standard: 1 },
+    limited: { standard: 2 },
+    natural: { standard: 2, mini: 1 },
+    nuance:  { standard: 2 }
+  };
+  Object.assign(score, {});
+  for (var k in levelMap[answers.level]) score[k] += levelMap[answers.level][k];
+
+  if (answers.purpose.indexOf('talk') > -1) { score.mini += 1; score.standard += 1; reasons.push('일본인과 자연스럽게 이야기하고 싶다고 답하셨어요'); }
+  if (answers.purpose.indexOf('pronunciation') > -1) { score.standard += 1; reasons.push('예쁜 발음을 목표로 하고 계세요'); }
+  if (answers.purpose.indexOf('grammar') > -1) { score.premium += 2; reasons.push('문법부터 탄탄히 배우고 싶다고 답하셨어요'); }
+  if (urgent) reasons.push('유학·취업 등 목표 시점이 있으신 것 같아요');
+
+  if (answers.priority.indexOf('talk_a_lot') > -1) score.mini += 2;
+  if (answers.priority.indexOf('correction') > -1) score.standard += 1;
+  if (answers.priority.indexOf('pronunciation2') > -1) score.standard += 1;
+  if (answers.priority.indexOf('natural_expr') > -1) { score.standard += 2; reasons.push('자연스러운 표현을 중요하게 생각하세요'); }
+  if (answers.priority.indexOf('grammar2') > -1) { score.premium += 2; reasons.push('문법을 제대로 이해하고 싶어하세요'); }
+  if (answers.priority.indexOf('curriculum') > -1) { score.premium += 2; reasons.push('나만의 커리큘럼을 원하고 계세요'); }
+
+  var jaMap = { excited: { mini: 1, standard: 1 }, nervous_ok: { standard: 1 }, sometimes_kr: { standard: 1, premium: 1 }, worried: { premium: 2 } };
+  for (var k2 in jaMap[answers.jaonly]) score[k2] += jaMap[answers.jaonly][k2];
+
+  // course decision — premium threshold kept strict
+  var course = 'standard';
+  if (score.premium >= score.standard + 2 && score.premium >= score.mini + 2) course = 'premium';
+  else if (score.mini > score.standard && score.mini >= score.premium) course = 'mini';
+
+  // ---- frequency decision ----
+  var freq, price, priceLabel;
+  var selfStudyActive = answers.selfstudy === 'weekly' || answers.selfstudy === 'daily';
+
+  if (course === 'mini') {
+    freq = selfStudyActive ? 6 : 8;
+    price = freq === 6 ? '55,000' : '72,000';
+    reasons.push(selfStudyActive ? '스스로 공부하는 시간이 있으셔서 6회로도 충분해요' : '레슨에서 말하는 연습량을 늘리는 게 좋아서 8회를 추천해요');
+  } else if (course === 'standard') {
+    if (answers.selfstudy === 'daily' && answers.priority.indexOf('talk_a_lot') > -1) { freq = 4; price = '64,000'; reasons.push('매일 자습하시고 레슨은 말하기 중심으로 원하셔서 4회로 충분해요'); }
+    else if (answers.selfstudy === 'lesson_only' && urgent) { freq = 12; price = '168,000'; reasons.push('레슨만으로 늘고 싶고 목표 시점이 있어서 12회를 추천해요'); }
+    else if (answers.selfstudy === 'lesson_only' || answers.selfstudy === 'homework') { freq = 8; price = '120,000'; reasons.push('레슨 중심으로 배우고 싶어하셔서 8회를 추천해요'); }
+    else { freq = 6; price = '92,000'; reasons.push('가장 균형 잡힌 표준 페이스인 6회를 추천해요'); }
+  } else {
+    if (answers.selfstudy === 'lesson_only' && urgent) { freq = 8; price = '188,000'; reasons.push('기초부터 단기간에 다지고 싶어하셔서 8회를 추천해요'); }
+    else if (urgent) { freq = 6; price = '144,000'; reasons.push('목표 시점이 있어 조금 빠르게 6회를 추천해요'); }
+    else { freq = 4; price = '96,000'; reasons.push('기초부터 차근차근, 기본 페이스인 4회를 추천해요'); }
+  }
+
+  var courseInfo = {
+    mini:     { name: '🗣️ 미니 레슨', time: '15분', desc: '가볍게, 부담 없이 말하는 연습 중심. 일본인과 자주 대화하고 싶은 분께 잘 맞아요.', anchor: 'plan-mini' },
+    standard: { name: '💬 스탠다드 레슨', time: '30분', desc: '자유로운 주제로 자연스럽게 대화하며 표현력을 키우는 가장 인기 있는 코스예요.', anchor: 'plan-standard' },
+    premium:  { name: '📖 프리미엄 레슨', time: '30분', desc: '문법 설명부터 차근차근, 개인 맞춤 커리큘럼으로 기초를 탄탄히 다져요.', anchor: 'plan-premium' }
+  };
+  var info = courseInfo[course];
+
+  document.getElementById('resultHello').textContent = answers.name + '님께 추천하는 코스는';
+  document.getElementById('resultName').textContent = info.name;
+  document.getElementById('resultTime').textContent = info.time + ' · 월 ' + freq + '회';
+  document.getElementById('resultDesc').textContent = info.desc;
+  document.getElementById('resultPriceLabel').textContent = '월 ' + freq + '회';
+  document.getElementById('resultPriceValue').textContent = '₩' + price;
+
+  var ul = document.getElementById('resultReasons');
+  reasons.slice(0, 5).forEach(function(r) {
+    var li = document.createElement('li');
+    li.textContent = r;
+    ul.appendChild(li);
+  });
+  document.querySelector('.result-btn').href = IG_URL;
+
+  document.getElementById('resultScreen').classList.add('active');
+
+  // ---- backup + silent submit to Google Sheet via Google Form ----
+  var record = {
+    date: new Date().toISOString(), name: answers.name, level: answers.level,
+    purpose: answers.purpose, selfstudy: answers.selfstudy, priority: answers.priority,
+    jaonly: answers.jaonly, mbti: answers.mbti, course: course, freq: freq, price: price,
+    reasons: reasons
+  };
+  try {
+    var log = JSON.parse(localStorage.getItem('momo_quiz_log') || '[]');
+    log.push(record);
+    localStorage.setItem('momo_quiz_log', JSON.stringify(log));
+  } catch (e) {}
+
+  submitToGoogleForm(record);
+}
+
+function submitToGoogleForm(record) {
+  var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScb6rQijEiXDpLLe1qkH-lS3o3q8fHk5_eeQ9XPZOTwIt5t-w/formResponse';
+  var params = new URLSearchParams();
+  params.append('entry.366340186', record.name);
+  params.append('entry.414675114', levelLabel(record.level));
+  record.purpose.forEach(function(p) { params.append('entry.2012965099', purposeLabel(p)); });
+  params.append('entry.40933995', selfstudyLabel(record.selfstudy));
+  record.priority.forEach(function(p) { params.append('entry.1238914816', priorityLabel(p)); });
+  params.append('entry.252729376', jaonlyLabel(record.jaonly));
+  params.append('entry.1865197859', record.mbti);
+
+  fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: params })
+    .catch(function() { /* silent — local backup already saved */ });
+}
+
+function levelLabel(v) {
+  return { none: '일본어는 아직 잘 못해요', basic: '간단한 회화는 가능해요', limited: '곤란하진 않지만 쓸 수 있는 말이 제한적이에요', natural: '대체로 말하지만 일본인다운 자연스러운 화법을 익히고 싶어요', nuance: '존댓말이나 뉘앙스를 더 배우고 싶어요' }[v] || v;
+}
+function purposeLabel(v) {
+  return { talk: '일본인과 이야기하고 싶다', study_abroad: '유학 예정', work: '일본에서 일하고 싶다', pronunciation: '발음을 예쁘게 하고 싶다', grammar: '문법부터 탄탄히 배우고 싶다' }[v] || v;
+}
+function selfstudyLabel(v) {
+  return { lesson_only: '기본적으로 레슨만으로 늘고 싶어요', homework: '숙제가 있으면 조금 할 수 있어요', weekly: '주 1~3시간 정도 자습할 수 있어요', daily: '매일 스스로 공부할 예정이에요' }[v] || v;
+}
+function priorityLabel(v) {
+  return { talk_a_lot: '아무튼 많이 말하고 싶다', correction: '틀린 표현을 바로 고쳐줬으면 좋겠다', pronunciation2: '발음·억양', natural_expr: '자연스러운 표현', grammar2: '문법도 제대로 이해하고 싶다', curriculum: '나만의 커리큘럼으로 진행하고 싶다' }[v] || v;
+}
+function jaonlyLabel(v) {
+  return { excited: '재밌겠다! 도전하고 싶어요', nervous_ok: '처음엔 조금 불안하지만 도전할래요', sometimes_kr: '필요할 때만 한국어 지원이 있으면 좋겠어요', worried: '일본어만이면 조금 불안해요' }[v] || v;
+}
+</script>
+</body>
+</html>
