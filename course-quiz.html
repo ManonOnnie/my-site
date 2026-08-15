@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코스 진단 | momo.일본어 교실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #f2ead9;
+  color: #2c2a20;
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  font-weight: 300;
+  line-height: 1.85;
+  word-break: keep-all;
+  min-height: 100vh;
+}
+.serif { font-family: 'Noto Serif KR', serif; }
+.wrap { max-width: 480px; margin: 0 auto; padding: 32px 26px 64px; min-height: 100vh; display: flex; flex-direction: column; }
+.top-link { font-size: 12px; color: #7a6a4e; text-decoration: none; margin-bottom: 26px; display: inline-block; border-bottom: 1px solid rgba(166,138,84,0.4); padding-bottom: 2px; }
+.progress { display: flex; gap: 4px; margin-bottom: 30px; }
+.progress span { flex: 1; height: 2px; background: rgba(166,138,84,0.25); }
+.progress span.done { background: #a68a54; }
+
+.eyebrow { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: #a68a54; letter-spacing: 1.5px; margin-bottom: 10px; }
+h1 { font-family: 'Noto Serif KR', serif; font-size: 23px; font-weight: 700; margin-bottom: 8px; }
+.lede { font-size: 13px; color: #5c4430; margin-bottom: 34px; line-height: 1.9; }
+
+.screen { display: none; flex: 1; flex-direction: column; transform-origin: left center; backface-visibility: hidden; }
+.screen.active { display: flex; animation: pageIn 0.5s cubic-bezier(.25,.8,.35,1); }
+.screen.leaving-next { display: flex; animation: pageOutNext 0.4s ease forwards; }
+.screen.leaving-back { display: flex; animation: pageOutBack 0.4s ease forwards; }
+@keyframes pageIn { from { opacity: 0; transform: rotateY(-12deg) translateX(14px); } to { opacity: 1; transform: rotateY(0) translateX(0); } }
+@keyframes pageOutNext { from { opacity: 1; transform: rotateY(0); } to { opacity: 0; transform: rotateY(-40deg) translateX(-20px); } }
+@keyframes pageOutBack { from { opacity: 1; transform: rotateY(0); } to { opacity: 0; transform: rotateY(40deg) translateX(20px); } }
+
+/* start screen entrance */
+.start-valance {
+  height: 20px; margin: -32px -26px 30px;
+  background: repeating-linear-gradient(90deg, #2f3b2e 0 24px, #364434 24px 48px);
+  position: relative;
+}
+.start-valance::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -8px; height: 8px;
+  background: repeating-linear-gradient(90deg, #d4af6a 0 9px, #a68a54 9px 18px);
+}
+.start-valance.bottom { margin: 30px -26px -64px; transform: scaleY(-1); }
+.start-valance.bottom::after { top: -8px; bottom: auto; }
+#quizStart { position: relative; }
+#quizStart .eyebrow, #quizStart h1, #quizStart .lede, #quizStart .start-preview, #quizStart .start-btn {
+  opacity: 0; transform: translateY(10px); animation: startIn 0.7s ease forwards;
+}
+#quizStart .eyebrow { animation-delay: 0.15s; }
+#quizStart h1 { animation-delay: 0.3s; }
+#quizStart .lede { animation-delay: 0.45s; }
+#quizStart .start-preview { animation-delay: 0.55s; }
+#quizStart .start-btn { animation-delay: 0.7s; }
+@keyframes startIn { to { opacity: 1; transform: translateY(0); } }
+.start-btn { position: relative; animation: startIn 0.7s ease 0.7s forwards, btnPulse 2.2s ease-in-out 1.6s infinite; }
+@keyframes btnPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,106,0.55); } 50% { box-shadow: 0 0 0 10px rgba(212,175,106,0); } }
+.start-leaf { position: absolute; top: -20px; font-size: 15px; color: #d4af6a; opacity: 0.55; animation: leafDrift linear infinite; pointer-events: none; }
+@keyframes leafDrift { 0% { transform: translateY(0) translateX(0) rotate(0deg); } 100% { transform: translateY(360px) translateX(30px) rotate(200deg); } }
+.leaf-field { position: fixed; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
+.leaf { position: absolute; top: -30px; font-size: 18px; color: #d4af6a; animation: leafFall linear forwards; }
+@keyframes leafFall {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.9; }
+  100% { transform: translateY(110vh) translateX(var(--drift)) rotate(340deg); opacity: 0; }
+}
+
+/* wax seal stamp */
+.seal-stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border: 2px solid #a13d2e; color: #a13d2e;
+  font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 700;
+  margin-left: 10px; transform: scale(0) rotate(-25deg); opacity: 0;
+  vertical-align: middle;
+}
+.seal-stamp.stamped { animation: stampDown 0.45s cubic-bezier(.34,1.56,.64,1) forwards; }
+@keyframes stampDown { 0% { transform: scale(2.2) rotate(-25deg); opacity: 0; } 60% { transform: scale(0.9) rotate(-8deg); opacity: 1; } 100% { transform: scale(1) rotate(-8deg); opacity: 1; } }
+.screen.active { display: flex; }
+.q-num { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: #a68a54; margin-bottom: 8px; letter-spacing: 1px; }
+.q-text { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.5; }
+.q-note { font-size: 12px; color: #7a6a4e; margin-bottom: 22px; }
+
+.choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.choice-btn {
+  text-align: left; background: #eae0c9; border: 1px solid rgba(166,138,84,0.35);
+  padding: 15px 18px; font-size: 14px; color: #2c2a20;
+  font-family: inherit; cursor: pointer;
+}
+.choice-btn.selected { background: #2f3b2e; color: #f2ead9; border-color: #2f3b2e; }
+.text-input {
+  width: 100%; padding: 14px 16px; border: 1px solid rgba(166,138,84,0.4);
+  font-size: 14px; font-family: inherit; background: #f2ead9; margin-bottom: 24px; color: #2c2a20;
+}
+.q-actions { margin-top: auto; display: flex; gap: 10px; }
+.quiz-body { flex: 1; flex-direction: column; }
+.q-btn.back { flex: 0 0 auto; background: none; color: #7a6a4e; padding: 14px 8px; }
+.back-row { margin-top: auto; display: flex; }
+.back-row.only { padding-top: 4px; }
+.q-btn { flex: 1; padding: 14px; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; border: none; font-family: inherit; cursor: pointer; }
+.q-btn.next { background: #2f3b2e; color: #f2ead9; }
+.q-btn.next:disabled { background: #d8cba8; color: #a68a54; }
+
+/* start screen fill-out */
+#quizStart { display: flex; flex-direction: column; min-height: calc(100vh - 64px); }
+.start-preview { margin: 8px 0 auto; }
+.start-preview-label { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: #a68a54; letter-spacing: 1px; margin-bottom: 14px; }
+.start-chip-row { display: flex; flex-direction: column; gap: 10px; }
+.start-chip { display: flex; align-items: baseline; gap: 10px; padding: 12px 14px; background: #eae0c9; border-left: 2px solid #a68a54; }
+.start-chip .num { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: #a68a54; }
+.start-chip .txt { font-size: 13px; color: #3a2a1c; }
+.start-footer-note { margin-top: 30px; text-align: center; }
+.start-footer-note .time { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: #7a6a4e; }
+.start-btn {
+  text-align: center; font-weight: 700; background: linear-gradient(120deg, #d4af6a, #a68a54, #d4af6a);
+  background-size: 220% 100%; color: #232b21;
+  border: none; padding: 18px 20px; font-size: 15px; letter-spacing: 0.5px;
+  font-family: inherit; cursor: pointer; overflow: hidden;
+}
+.start-btn::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: skewX(-20deg); animation: btnShimmer 2.6s ease-in-out 1.2s infinite;
+}
+.start-btn .arrow-nudge { display: inline-block; animation: startBtnArrow 1.2s ease-in-out 1.2s infinite; }
+@keyframes btnShimmer { 0% { left: -60%; } 50% { left: 130%; } 100% { left: 130%; } }
+@keyframes startBtnArrow { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+
+/* curtain reveal */
+.curtain-wrap { position: relative; flex: 1; width: 100%; overflow: hidden; display: none; flex-direction: column; }
+.curtain-wrap.active { display: flex; }
+.curtain-panel {
+  position: absolute; top: 0; bottom: 0; width: 52%; z-index: 10;
+  transition: transform 1.1s cubic-bezier(.65,0,.2,1);
+  background: linear-gradient(90deg, #1e251c 0%, #2f3b2e 60%, #364434 100%);
+}
+.curtain-panel.right { right: 0; background: linear-gradient(270deg, #1e251c 0%, #2f3b2e 60%, #364434 100%); }
+.curtain-panel.left { left: 0; }
+.curtain-panel::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 3px, transparent 3px 14px);
+}
+.curtain-panel::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 16px;
+  background: repeating-linear-gradient(90deg, #d4af6a 0 9px, #a68a54 9px 18px);
+}
+.curtain-wrap.open .curtain-panel.left { transform: translateX(-100%); }
+.curtain-wrap.open .curtain-panel.right { transform: translateX(100%); }
+
+.result-screen { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 8px; }
+.result-eyebrow { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: #a68a54; letter-spacing: 1.5px; margin-bottom: 10px; }
+.result-hello { font-size: 13px; color: #7a6a4e; margin-bottom: 4px; }
+.result-name { font-family: 'Noto Serif KR', serif; font-size: 27px; font-weight: 700; margin-bottom: 10px; }
+.result-time { font-size: 12px; color: #a68a54; margin-bottom: 20px; }
+.result-desc { font-size: 14px; color: #3a2a1c; margin-bottom: 24px; line-height: 1.9; }
+.reasons { text-align: left; background: #eae0c9; padding: 18px 20px; margin-bottom: 22px; width: 100%; border-left: 2px solid #a68a54; }
+.reasons-title { font-family: 'Noto Serif KR', serif; font-size: 12px; font-weight: 700; color: #5c4430; margin-bottom: 10px; }
+.reasons li { font-size: 13px; color: #3a2a1c; margin-bottom: 6px; margin-left: 16px; }
+.result-price-box { background: #eae0c9; padding: 18px 22px; margin-bottom: 26px; width: 100%; }
+.result-price-box .n { font-size: 12px; color: #7a6a4e; }
+.result-price-box .v { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: #8a5a2e; }
+.result-btn {
+  display: inline-block; background: #2f3b2e; color: #f2ead9; padding: 15px 32px;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-decoration: none; margin-bottom: 14px; width: 100%;
+}
+.retry-link { font-size: 12px; color: #7a6a4e; text-decoration: underline; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" class="top-link">← 홈으로</a>
+
+  <div id="quizStart">
+    <div class="start-valance"></div>
+    <span class="start-leaf" style="left:15%; animation-duration:5.5s; animation-delay:0.3s;">🍃</span>
+    <span class="start-leaf" style="left:75%; animation-duration:6.5s; animation-delay:1.6s;">🍂</span>
+    <span class="start-leaf" style="left:45%; animation-duration:5s; animation-delay:3s;">🍃</span>
+    <p class="eyebrow">Course Quiz</p>
+    <h1>나에게 맞는 코스는?</h1>
+    <p class="lede">질문 몇 개에 답하면 momo가 딱 맞는 코스와 추천 횟수를 알려드려요 (약 1분)</p>
+
+    <div class="start-preview">
+      <p class="start-preview-label">What we'll ask</p>
+      <div class="start-chip-row">
+        <div class="start-chip"><span class="num">Ⅰ</span><span class="txt">지금 나의 일본어 실력</span></div>
+        <div class="start-chip"><span class="num">Ⅱ</span><span class="txt">일본어를 배우는 목적</span></div>
+        <div class="start-chip"><span class="num">Ⅲ</span><span class="txt">레슨에서 원하는 스타일</span></div>
+        <div class="start-chip"><span class="num">Ⅳ</span><span class="txt">공부하는 습관과 성향</span></div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">진단 시작하기 <span class="arrow-nudge">→</span></button>
+
+    <div class="start-footer-note">
+      <span class="time">⏱ 약 1분 · 7개의 질문</span>
+    </div>
+    <div class="start-valance bottom"></div>
+  </div>
+
+  <div id="quizBody" class="quiz-body" style="display:none;">
+    <div class="progress" id="progressBar"></div>
+
+    <div class="screen active" data-q="1">
+      <p class="q-num">Ⅰ · 7</p>
+      <p class="q-text">이름을 알려주세요</p>
+      <p class="q-note">닉네임도 괜찮아요. 진단 결과 확인 및 체험 레슨 신청 시 사용돼요</p>
+      <input type="text" id="nameInput" class="text-input" placeholder="이름 입력">
+      <div class="q-actions"><button class="q-btn next" onclick="nextFromText()">다음 →</button></div>
+    </div>
+
+    <div class="screen" data-q="2">
+      <p class="q-num">Ⅱ · 7</p>
+      <p class="q-text">지금 일본어 실력은 어느 정도인가요?</p>
+      <div class="choices" data-single="level">
+        <button class="choice-btn" data-v="none">일본어는 아직 잘 못해요</button>
+        <button class="choice-btn" data-v="basic">간단한 회화는 가능해요</button>
+        <button class="choice-btn" data-v="limited">곤란하진 않지만 쓸 수 있는 말이 제한적이에요</button>
+        <button class="choice-btn" data-v="natural">대체로 말하지만 일본인다운 자연스러운 화법을 익히고 싶어요</button>
+        <button class="choice-btn" data-v="nuance">존댓말이나 뉘앙스를 더 배우고 싶어요</button>
+      </div>
+      <div class="back-row only"><button class="q-btn back" onclick="goBack()">← 이전</button></div>
+    </div>
+
+    <div class="screen" data-q="3">
+      <p class="q-num">Ⅲ · 7</p>
+      <p class="q-text">일본어를 배우는 목적은?</p>
+      <p class="q-note">여러 개 선택 가능</p>
+      <div class="choices" data-multi="purpose">
+        <button class="choice-btn" data-v="talk">일본인과 이야기하고 싶다</button>
+        <button class="choice-btn" data-v="study_abroad">유학 예정</button>
+        <button class="choice-btn" data-v="work">일본에서 일하고 싶다</button>
+        <button class="choice-btn" data-v="pronunciation">발음을 예쁘게 하고 싶다</button>
+        <button class="choice-btn" data-v="grammar">문법부터 탄탄히 배우고 싶다</button>
+      </div>
+      <div class="q-actions"><button class="q-btn back" onclick="goBack()">← 이전</button><button class="q-btn next" onclick="nextFromMulti('purpose', 3)">다음 →</button></div>
+    </div>
+
+    <div class="screen" data-q="4">
+      <p class="q-num">Ⅳ · 7</p>
+      <p class="q-text">레슨 외에는 얼마나 공부하시나요?</p>
+      <div class="choices" data-single="selfstudy">
+        <button class="choice-btn" data-v="lesson_only">기본적으로 레슨만으로 늘고 싶어요</button>
+        <button class="choice-btn" data-v="homework">숙제가 있으면 조금 할 수 있어요</button>
+        <button class="choice-btn" data-v="weekly">주 1~3시간 정도 자습할 수 있어요</button>
+        <button class="choice-btn" data-v="daily">매일 스스로 공부할 예정이에요</button>
+      </div>
+      <div class="back-row only"><button class="q-btn back" onclick="goBack()">← 이전</button></div>
+    </div>
+
+    <div class="screen" data-q="5">
+      <p class="q-num">Ⅴ · 7</p>
+      <p class="q-text">레슨에서 특히 중요하게 생각하는 것은?</p>
+      <p class="q-note">최대 3개까지 선택</p>
+      <div class="choices" data-multi="priority">
+        <button class="choice-btn" data-v="talk_a_lot">아무튼 많이 말하고 싶다</button>
+        <button class="choice-btn" data-v="correction">틀린 표현을 바로 고쳐줬으면 좋겠다</button>
+        <button class="choice-btn" data-v="pronunciation2">발음·억양</button>
+        <button class="choice-btn" data-v="natural_expr">자연스러운 표현</button>
+        <button class="choice-btn" data-v="grammar2">문법도 제대로 이해하고 싶다</button>
+        <button class="choice-btn" data-v="curriculum">나만의 커리큘럼으로 진행하고 싶다</button>
+      </div>
+      <div class="q-actions"><button class="q-btn back" onclick="goBack()">← 이전</button><button class="q-btn next" onclick="nextFromMulti('priority', 4)">다음 →</button></div>
+    </div>
+
+    <div class="screen" data-q="6">
+      <p class="q-num">Ⅵ · 7</p>
+      <p class="q-text">일본어만으로 진행하는 레슨, 어떠세요?</p>
+      <div class="choices" data-single="jaonly">
+        <button class="choice-btn" data-v="excited">재밌겠다! 도전하고 싶어요</button>
+        <button class="choice-btn" data-v="nervous_ok">처음엔 조금 불안하지만 도전할래요</button>
+        <button class="choice-btn" data-v="sometimes_kr">필요할 때만 한국어 지원이 있으면 좋겠어요</button>
+        <button class="choice-btn" data-v="worried">일본어만이면 조금 불안해요</button>
+      </div>
+      <div class="back-row only"><button class="q-btn back" onclick="goBack()">← 이전</button></div>
+    </div>
+
+    <div class="screen" data-q="7">
+      <p class="q-num">Ⅶ · 7 · 선택</p>
+      <p class="q-text">MBTI (선택사항)</p>
+      <p class="q-note">진단 결과에는 영향을 주지 않아요. 레슨 진행 시 참고용으로만 사용해요</p>
+      <input type="text" id="mbtiInput" class="text-input" placeholder="예: ENFP / 모름 / 답변 안 함">
+      <div class="q-actions"><button class="q-btn back" onclick="goBack()">← 이전</button><button class="q-btn next" onclick="finishQuiz()">결과 보기 →</button></div>
+    </div>
+  </div>
+
+  <div class="curtain-wrap" id="curtainWrap">
+    <div class="curtain-panel left"></div>
+    <div class="curtain-panel right"></div>
+    <div class="result-screen" id="resultScreen">
+      <p class="result-eyebrow">Your Course</p>
+      <p class="result-hello" id="resultHello"></p>
+      <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+        <p class="result-name serif" id="resultName"></p><span class="seal-stamp" id="sealStamp">認</span>
+      </div>
+      <p class="result-time" id="resultTime"></p>
+      <p class="result-desc" id="resultDesc"></p>
+      <div class="reasons">
+        <div class="reasons-title">이렇게 진단했어요</div>
+        <ul id="resultReasons"></ul>
+      </div>
+      <div class="result-price-box">
+        <span class="n" id="resultPriceLabel"></span><br>
+        <span class="v" id="resultPriceValue"></span>
+      </div>
+      <p style="font-size:12px; color:#7a6a4e; margin-bottom:10px;">예약은 인스타그램 DM으로 받고 있어요<br>DM으로 <strong style="color:#8a5a2e;">"예약"</strong>이라고 보내주세요</p>
+      <a href="https://www.instagram.com/momo.jptutor?igsh=MWl2NWRrdW5xbXY1cg%3D%3D&utm_source=qr" target="_blank" class="result-btn">인스타그램 DM 보내기</a>
+      <span class="retry-link" onclick="location.reload()">다시 진단하기</span>
+    </div>
+  </div>
+</div>
+
+<script>
+var IG_URL = 'https://www.instagram.com/momo.jptutor?igsh=MWl2NWRrdW5xbXY1cg%3D%3D&utm_source=qr';
+var answers = { level: null, purpose: [], selfstudy: null, priority: [], jaonly: null, name: '', mbti: '' };
+var currentQ = 1;
+var TOTAL_Q = 7;
+
+function buildProgress() {
+  var bar = document.getElementById('progressBar');
+  for (var i = 0; i < TOTAL_Q; i++) {
+    var s = document.createElement('span');
+    bar.appendChild(s);
+  }
+}
+buildProgress();
+
+function startQuiz() {
+  document.getElementById('quizStart').style.display = 'none';
+  document.getElementById('quizBody').style.display = 'flex';
+}
+
+document.querySelectorAll('[data-single]').forEach(function(group) {
+  var key = group.getAttribute('data-single');
+  group.querySelectorAll('.choice-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      group.querySelectorAll('.choice-btn').forEach(function(b) { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      answers[key] = btn.getAttribute('data-v');
+      setTimeout(function() { goNext(); }, 220);
+    });
+  });
+});
+
+document.querySelectorAll('[data-multi]').forEach(function(group) {
+  var key = group.getAttribute('data-multi');
+  group.querySelectorAll('.choice-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var v = btn.getAttribute('data-v');
+      var idx = answers[key].indexOf(v);
+      var max = group.closest('.screen').querySelector('.q-btn.next').getAttribute('data-max') || 99;
+      if (idx > -1) {
+        answers[key].splice(idx, 1);
+        btn.classList.remove('selected');
+      } else {
+        answers[key].push(v);
+        btn.classList.add('selected');
+      }
+    });
+  });
+});
+
+function nextFromMulti(key, max) {
+  document.querySelector('.q-btn.next[onclick*="' + key + '"]').setAttribute('data-max', max);
+  goNext();
+}
+
+function nextFromText() {
+  answers.name = document.getElementById('nameInput').value.trim() || '고객';
+  goNext();
+}
+
+function goNext() {
+  var barSpans = document.querySelectorAll('#progressBar span');
+  barSpans[currentQ - 1].classList.add('done');
+  var cur = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  cur.classList.remove('active');
+  cur.classList.add('leaving-next');
+  currentQ++;
+  var next = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  setTimeout(function() {
+    cur.classList.remove('leaving-next');
+    if (next) next.classList.add('active');
+  }, 220);
+}
+
+function goBack() {
+  if (currentQ <= 1) return;
+  var cur = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  cur.classList.remove('active');
+  cur.classList.add('leaving-back');
+  currentQ--;
+  var barSpans = document.querySelectorAll('#progressBar span');
+  barSpans[currentQ - 1].classList.remove('done');
+  var prev = document.querySelector('.screen[data-q="' + currentQ + '"]');
+  setTimeout(function() {
+    cur.classList.remove('leaving-back');
+    prev.classList.add('active');
+  }, 220);
+}
+
+function finishQuiz() {
+  answers.mbti = document.getElementById('mbtiInput').value.trim() || '답변 안 함';
+  var barSpans = document.querySelectorAll('#progressBar span');
+  barSpans[TOTAL_Q - 1].classList.add('done');
+  document.getElementById('quizBody').style.display = 'none';
+  showResult();
+}
+
+function showResult() {
+  var score = { mini: 0, standard: 0, premium: 0 };
+  var reasons = [];
+  var urgent = answers.purpose.indexOf('study_abroad') > -1 || answers.purpose.indexOf('work') > -1;
+
+  var levelMap = {
+    none:    { premium: 3 },
+    basic:   { mini: 1, standard: 1 },
+    limited: { standard: 2 },
+    natural: { standard: 2, mini: 1 },
+    nuance:  { standard: 2 }
+  };
+  for (var k in levelMap[answers.level]) score[k] += levelMap[answers.level][k];
+
+  if (answers.purpose.indexOf('talk') > -1) { score.mini += 1; score.standard += 1; reasons.push('일본인과 자연스럽게 이야기하고 싶다고 답하셨어요'); }
+  if (answers.purpose.indexOf('pronunciation') > -1) { score.standard += 1; reasons.push('예쁜 발음을 목표로 하고 계세요'); }
+  if (answers.purpose.indexOf('grammar') > -1) { score.premium += 2; reasons.push('문법부터 탄탄히 배우고 싶다고 답하셨어요'); }
+  if (urgent) reasons.push('유학·취업 등 목표 시점이 있으신 것 같아요');
+
+  if (answers.priority.indexOf('talk_a_lot') > -1) score.mini += 2;
+  if (answers.priority.indexOf('correction') > -1) score.standard += 1;
+  if (answers.priority.indexOf('pronunciation2') > -1) score.standard += 1;
+  if (answers.priority.indexOf('natural_expr') > -1) { score.standard += 2; reasons.push('자연스러운 표현을 중요하게 생각하세요'); }
+  if (answers.priority.indexOf('grammar2') > -1) { score.premium += 2; reasons.push('문법을 제대로 이해하고 싶어하세요'); }
+  if (answers.priority.indexOf('curriculum') > -1) { score.premium += 2; reasons.push('나만의 커리큘럼을 원하고 계세요'); }
+
+  var jaMap = { excited: { mini: 1, standard: 1 }, nervous_ok: { standard: 1 }, sometimes_kr: { standard: 1, premium: 1 }, worried: { premium: 2 } };
+  for (var k2 in jaMap[answers.jaonly]) score[k2] += jaMap[answers.jaonly][k2];
+
+  var course = 'standard';
+  if (score.premium >= score.standard + 2 && score.premium >= score.mini + 2) course = 'premium';
+  else if (score.mini > score.standard && score.mini >= score.premium) course = 'mini';
+
+  var freq, price;
+  var selfStudyActive = answers.selfstudy === 'weekly' || answers.selfstudy === 'daily';
+
+  if (course === 'mini') {
+    freq = selfStudyActive ? 6 : 8;
+    price = freq === 6 ? '55,000' : '72,000';
+    reasons.push(selfStudyActive ? '스스로 공부하는 시간이 있으셔서 6회로도 충분해요' : '레슨에서 말하는 연습량을 늘리는 게 좋아서 8회를 추천해요');
+  } else if (course === 'standard') {
+    if (answers.selfstudy === 'daily' && answers.priority.indexOf('talk_a_lot') > -1) { freq = 4; price = '64,000'; reasons.push('매일 자습하시고 레슨은 말하기 중심으로 원하셔서 4회로 충분해요'); }
+    else if (answers.selfstudy === 'lesson_only' && urgent) { freq = 12; price = '168,000'; reasons.push('레슨만으로 늘고 싶고 목표 시점이 있어서 12회를 추천해요'); }
+    else if (answers.selfstudy === 'lesson_only' || answers.selfstudy === 'homework') { freq = 8; price = '120,000'; reasons.push('레슨 중심으로 배우고 싶어하셔서 8회를 추천해요'); }
+    else { freq = 6; price = '92,000'; reasons.push('가장 균형 잡힌 표준 페이스인 6회를 추천해요'); }
+  } else {
+    if (answers.selfstudy === 'lesson_only' && urgent) { freq = 8; price = '188,000'; reasons.push('기초부터 단기간에 다지고 싶어하셔서 8회를 추천해요'); }
+    else if (urgent) { freq = 6; price = '144,000'; reasons.push('목표 시점이 있어 조금 빠르게 6회를 추천해요'); }
+    else { freq = 4; price = '96,000'; reasons.push('기초부터 차근차근, 기본 페이스인 4회를 추천해요'); }
+  }
+
+  var courseInfo = {
+    mini:     { name: '미니 레슨', time: '15분', desc: '가볍게, 부담 없이 말하는 연습 중심. 일본인과 자주 대화하고 싶은 분께 잘 맞아요.', anchor: 'plan-mini' },
+    standard: { name: '스탠다드 레슨', time: '30분', desc: '자유로운 주제로 자연스럽게 대화하며 표현력을 키우는 가장 인기 있는 코스예요.', anchor: 'plan-standard' },
+    premium:  { name: '프리미엄 레슨', time: '30분', desc: '문법 설명부터 차근차근, 개인 맞춤 커리큘럼으로 기초를 탄탄히 다져요.', anchor: 'plan-premium' }
+  };
+  var info = courseInfo[course];
+
+  document.getElementById('resultHello').textContent = answers.name + '님께 추천하는 코스는';
+  document.getElementById('resultName').textContent = info.name;
+  document.getElementById('resultTime').textContent = info.time + ' · 월 ' + freq + '회';
+  document.getElementById('resultDesc').textContent = info.desc;
+  document.getElementById('resultPriceLabel').textContent = '월 ' + freq + '회';
+  document.getElementById('resultPriceValue').textContent = '₩' + price;
+
+  var ul = document.getElementById('resultReasons');
+  reasons.slice(0, 5).forEach(function(r) {
+    var li = document.createElement('li');
+    li.textContent = r;
+    ul.appendChild(li);
+  });
+  document.querySelector('.result-btn').href = IG_URL;
+
+  var curtainWrap = document.getElementById('curtainWrap');
+  curtainWrap.classList.add('active');
+  setTimeout(function() { curtainWrap.classList.add('open'); }, 500);
+  setTimeout(function() { spawnLeaves(); }, 900);
+  setTimeout(function() {
+    var seal = document.getElementById('sealStamp');
+    if (seal) seal.classList.add('stamped');
+  }, 1500);
+
+  var record = {
+    date: new Date().toISOString(), name: answers.name, level: answers.level,
+    purpose: answers.purpose, selfstudy: answers.selfstudy, priority: answers.priority,
+    jaonly: answers.jaonly, mbti: answers.mbti, course: course, freq: freq, price: price,
+    reasons: reasons
+  };
+  try {
+    var log = JSON.parse(localStorage.getItem('momo_quiz_log') || '[]');
+    log.push(record);
+    localStorage.setItem('momo_quiz_log', JSON.stringify(log));
+  } catch (e) {}
+
+  submitToGoogleForm(record);
+}
+
+function submitToGoogleForm(record) {
+  var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScb6rQijEiXDpLLe1qkH-lS3o3q8fHk5_eeQ9XPZOTwIt5t-w/formResponse';
+  var params = new URLSearchParams();
+  params.append('entry.366340186', record.name);
+  params.append('entry.414675114', levelLabel(record.level));
+  record.purpose.forEach(function(p) { params.append('entry.2012965099', purposeLabel(p)); });
+  params.append('entry.40933995', selfstudyLabel(record.selfstudy));
+  record.priority.forEach(function(p) { params.append('entry.1238914816', priorityLabel(p)); });
+  params.append('entry.252729376', jaonlyLabel(record.jaonly));
+  params.append('entry.1865197859', record.mbti);
+
+  fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', body: params })
+    .catch(function() { /* silent — local backup already saved */ });
+}
+
+function spawnLeaves() {
+  var field = document.createElement('div');
+  field.className = 'leaf-field';
+  document.body.appendChild(field);
+  var glyphs = ['🍃', '🍂'];
+  for (var i = 0; i < 18; i++) {
+    (function(i) {
+      setTimeout(function() {
+        var leaf = document.createElement('span');
+        leaf.className = 'leaf';
+        leaf.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+        leaf.style.left = Math.random() * 100 + 'vw';
+        leaf.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+        leaf.style.animationDuration = (3 + Math.random() * 2) + 's';
+        leaf.style.fontSize = (14 + Math.random() * 10) + 'px';
+        field.appendChild(leaf);
+        setTimeout(function() { leaf.remove(); }, 5500);
+      }, i * 130);
+    })(i);
+  }
+  setTimeout(function() { field.remove(); }, 6000);
+}
+
+function levelLabel(v) {
+  return { none: '일본어는 아직 잘 못해요', basic: '간단한 회화는 가능해요', limited: '곤란하진 않지만 쓸 수 있는 말이 제한적이에요', natural: '대체로 말하지만 일본인다운 자연스러운 화법을 익히고 싶어요', nuance: '존댓말이나 뉘앙스를 더 배우고 싶어요' }[v] || v;
+}
+function purposeLabel(v) {
+  return { talk: '일본인과 이야기하고 싶다', study_abroad: '유학 예정', work: '일본에서 일하고 싶다', pronunciation: '발음을 예쁘게 하고 싶다', grammar: '문법부터 탄탄히 배우고 싶다' }[v] || v;
+}
+function selfstudyLabel(v) {
+  return { lesson_only: '기본적으로 레슨만으로 늘고 싶어요', homework: '숙제가 있으면 조금 할 수 있어요', weekly: '주 1~3시간 정도 자습할 수 있어요', daily: '매일 스스로 공부할 예정이에요' }[v] || v;
+}
+function priorityLabel(v) {
+  return { talk_a_lot: '아무튼 많이 말하고 싶다', correction: '틀린 표현을 바로 고쳐줬으면 좋겠다', pronunciation2: '발음·억양', natural_expr: '자연스러운 표현', grammar2: '문법도 제대로 이해하고 싶다', curriculum: '나만의 커리큘럼으로 진행하고 싶다' }[v] || v;
+}
+function jaonlyLabel(v) {
+  return { excited: '재밌겠다! 도전하고 싶어요', nervous_ok: '처음엔 조금 불안하지만 도전할래요', sometimes_kr: '필요할 때만 한국어 지원이 있으면 좋겠어요', worried: '일본어만이면 조금 불안해요' }[v] || v;
+}
+</script>
+</body>
+</html>
