@@ -108,6 +108,31 @@
   .rowflex { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .loading { text-align: center; padding: 60px 0; color: var(--ink-45); font-size: 12px; letter-spacing: 1px; }
   .vrule { width: 1px; height: 28px; background: var(--ink-25); margin: 0 auto 14px; }
+
+  /* editorial spine — thin vertical line + sideways small text, echoing a Taisho book spine */
+  .spine { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+  .spine .spine-line { width: 1px; height: 34px; background: var(--ink-25); }
+  .spine .spine-dot { width: 5px; height: 5px; border-radius: 50%; border: 1px solid var(--ink-25); margin-top: -2px; }
+  .spine .spine-text {
+    writing-mode: vertical-rl; font-family: 'Noto Serif KR', serif; font-size: 11px;
+    letter-spacing: 4px; color: var(--ink-45);
+  }
+
+  /* small geometric lattice accent, a restrained nod to Taisho-era mon patterns */
+  .lattice { display: block; margin: 40px auto 0; opacity: 0.5; }
+
+  /* brand mark block — circular monogram + name, echoing a shop colophon */
+  .brand-block { text-align: center; margin-top: 56px; padding-top: 26px; border-top: 1px solid var(--ink-12); }
+  .brand-mark {
+    width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--ink-25);
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
+    font-family: 'Noto Serif KR', serif; font-size: 11px; line-height: 1.3; color: var(--ink-60);
+  }
+  .brand-name { font-family: 'Noto Serif KR', serif; font-size: 13px; letter-spacing: 2px; color: var(--ink); }
+  .brand-eng {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 11px;
+    color: var(--ink-45); letter-spacing: 2px; margin-top: 3px;
+  }
 </style>
 </head>
 <body>
@@ -251,6 +276,11 @@ function renderStudentView(token) {
     .sort((a,b) => new Date(a.datetime) - new Date(b.datetime));
 
   let html = `
+    <div class="spine" style="justify-content:center;">
+      <span class="spine-text">MOMO 일본어</span>
+      <span class="spine-dot"></span>
+      <span class="spine-line"></span>
+    </div>
     <div class="card">
       <div class="vrule"></div>
       <div class="eng" style="text-align:center;">RESERVATION</div>
